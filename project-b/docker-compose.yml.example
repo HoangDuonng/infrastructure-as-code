@@ -1,0 +1,24 @@
+# Project B - Docker Compose Example
+# This is a reference file showing how to structure docker-compose
+# You can deploy this separately or integrate with Terraform
+
+version: '3.8'
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./html:/usr/share/nginx/html
+    restart: unless-stopped
+
+  app:
+    # Add your application service here
+    build: .
+    depends_on:
+      - web
+    restart: unless-stopped
+

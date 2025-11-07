@@ -1,0 +1,9 @@
+# Project B - Example variables file
+# Copy this file to terraform.tfvars and fill in your values
+
+vultr_api_key = "your-vultr-api-key"
+region        = "sgp"
+instance_plan = "vc2-1c-1gb"
+os_id         = 387
+environment   = "dev"
+

@@ -1,121 +1,115 @@
 # Infrastructure Inspection - Vultr Deployment
 
-Terraform configuration để deploy infrastructure trên Vultr với Docker Compose và Nginx.
+Terraform configuration to deploy infrastructure on Vultr with Docker Compose and Nginx.
 
-## Kiến trúc
+## Architecture
 
-- **Provider**: Vultr
-- **OS**: Ubuntu 22.04 (Linux)
-- **Container**: Docker + Docker Compose
-- **Web Server**: Nginx
-- **Applications**: NextJS (Frontend) + Spring Boot (Backend)
+- Provider: Vultr
+- OS: Ubuntu 22.04 (Linux)
+- Containerization: Docker + Docker Compose
+- Web Server: Nginx
+- Applications: NextJS (Frontend) + Spring Boot (Backend)
 
-## Yêu cầu
+## Requirements
 
 - Terraform >= 1.0
 - Vultr API Key
 
-## Setup
+## Deployment
 
-1. **Clone repository**
+1. Clone the repository:
    ```bash
    git clone <repo-url>
    cd infra-inspection
    ```
 
-2. **Copy và config variables**
+2. Copy and configure variables:
    ```bash
    cp terraform.tfvars.example terraform.tfvars
    ```
 
-3. **Init Terraform**
+3. Initialize Terraform:
    ```bash
    terraform init
    ```
 
-4. **Review và apply**
+4. Apply the configuration:
    ```bash
    terraform plan
    terraform apply
    ```
 
-## Sau khi deploy
+## Post-Deployment
 
-Sau khi `terraform apply` thành công:
+After execution:
 
-1. **Server đã được setup với:**
-   - Docker và Docker Compose đã được cài đặt
-   - Thư mục `/srv/app/` đã được tạo với cấu trúc:
-     - `/srv/app/nginx/` - Nginx config
-     - `/srv/app/logs/` - Log files
+1. Server state:
+   - Docker and Docker Compose are installed.
+   - The directory `/srv/app/` is initialized with:
+     - `/srv/app/nginx/` - Nginx configuration.
+     - `/srv/app/logs/` - Log storage.
 
-2. **Tạo và copy config files lên server:**
-   
-   - `nginx.conf` - Cấu hình Nginx (proxy NextJS và Spring Boot)
-   - `docker-compose.yml` - Cấu hình Docker Compose
-   
+2. Transfer configuration files to the server:
+   - `nginx.conf` - Nginx proxy rules for NextJS and Spring Boot.
+   - `docker-compose.yml` - Container stack definition.
+
    ```bash
-   # Copy nginx.conf
    scp nginx.conf root@<SERVER_IP>:/srv/app/nginx/nginx.conf
-   
-   # Copy docker-compose.yml
    scp docker-compose.yml root@<SERVER_IP>:/srv/app/docker-compose.yml
    ```
 
-3. **Copy application code:**
+3. Transfer application source code:
    ```bash
-   # Copy NextJS frontend
    scp -r ./frontend root@<SERVER_IP>:/srv/app/
-   
-   # Copy Spring Boot backend
    scp -r ./backend root@<SERVER_IP>:/srv/app/
    ```
 
-4. **SSH vào server và chạy:**
+4. Connect to the server and execute the application:
    ```bash
    ssh root@<SERVER_IP>
    cd /srv/app
    docker compose up -d
    ```
 
-## Cấu trúc thư mục trên server
+## Target Directory Structure
 
 ```
 /srv/app/
 ├── nginx/
 │   └── default.conf
 ├── logs/
-├── frontend/          # NextJS code
-├── backend/           # Spring Boot code
+├── frontend/          # NextJS application
+├── backend/           # Spring Boot application
 └── docker-compose.yml
 ```
 
-## Lưu ý
+## System Configurations
 
-- Firewall rules (UFW) sẽ tự động được config (ports: 22, 80, 443)
-- Fail2ban được cài đặt để bảo vệ SSH
+- Firewall rules (UFW) permit traffic on ports 22, 80, and 443.
+- Fail2ban is installed to secure SSH.
 
 ## Troubleshooting
 
-### Kiểm tra Docker đã cài chưa
+### Verify Installation Status
 ```bash
 docker --version
 docker compose version
 ```
 
-### Xem logs của user-data script khi khởi tạo server để debug khi install tools
+### Inspect Cloud-Init Log
 ```bash
 cat /var/log/cloud-init-output.log
 ```
-### Xem logs của nginx 
+
+### Access Nginx Logs
 ```bash
-access_log cat /var/log/nginx/access.log;
-error_log cat /var/log/nginx/error.log warn;
+cat /var/log/nginx/access.log
+cat /var/log/nginx/error.log
 ```
 
-### Kiểm tra services
+### Monitor Container Status
 ```bash
 cd /srv/app
 docker compose ps
-docker compose logs <name-container>
+docker compose logs <container-name>
 ```

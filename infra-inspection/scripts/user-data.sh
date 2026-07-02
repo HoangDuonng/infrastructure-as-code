@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# User data script để setup Docker và Docker Compose trên Vultr instance
+# Setup Docker and Docker Compose on Vultr
 
 set -e
 
 echo "Starting user data script..."
 
-# Update system
+# System update
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 apt-get upgrade -y
 
-# Install required packages
+# Dependencies
 apt-get install -y \
     ca-certificates \
     curl \
@@ -36,31 +36,29 @@ if ! command -v docker &> /dev/null; then
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 fi
 
-# Docker Compose plugin đã được cài ở trên (docker-compose-plugin)
-# Kiểm tra xem có thể dùng docker compose (plugin) không
-# Nếu muốn dùng standalone docker-compose, uncomment phần dưới
+# Standalone Docker Compose (Optional)
 # if ! command -v docker-compose &> /dev/null; then
 #     echo "Installing Docker Compose standalone..."
 #     curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 #     chmod +x /usr/local/bin/docker-compose
 # fi
 
-# Start and enable Docker
+# Service control
 systemctl start docker || true
 systemctl enable docker
 
-# Add current user to docker group (if exists)
+# Docker group membership
 if id "ubuntu" &>/dev/null; then
     usermod -aG docker ubuntu
 elif id "debian" &>/dev/null; then
     usermod -aG docker debian
 fi
 
-# Create necessary directories for app deployment
+# Directories
 mkdir -p /srv/app/nginx
 mkdir -p /srv/app/logs
 
-# Set firewall rules (UFW)
+# Firewall (UFW)
 if command -v ufw &> /dev/null; then
     echo "Configuring firewall..."
     ufw --force enable
@@ -70,7 +68,7 @@ if command -v ufw &> /dev/null; then
     ufw reload
 fi
 
-# Install fail2ban (optional but recommended)
+# Fail2ban
 apt-get install -y fail2ban
 systemctl enable fail2ban
 systemctl start fail2ban
@@ -78,7 +76,7 @@ systemctl start fail2ban
 echo "User data script completed successfully!"
 echo "Docker version: $(docker --version)"
 
-# Kiểm tra Docker Compose (plugin hoặc standalone)
+# Verify Docker Compose
 if docker compose version &> /dev/null; then
     echo "Docker Compose (plugin) version: $(docker compose version)"
 elif command -v docker-compose &> /dev/null; then

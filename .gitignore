@@ -28,6 +28,6 @@ Thumbs.db
 # Sensitive files
 *.pem
 *.key
-secrets/
+/secrets/
 .env
 

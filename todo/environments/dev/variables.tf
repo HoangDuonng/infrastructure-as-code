@@ -15,10 +15,10 @@ variable "zone" {
   default     = "asia-southeast1-a"
 }
 
-variable "cluster_name" {
-  description = "The name of the GKE cluster."
+variable "environment" {
+  description = "The deployment environment name."
   type        = string
-  default     = "todo-cluster"
+  default     = "dev"
 }
 
 variable "gke_machine_type" {
@@ -30,5 +30,5 @@ variable "gke_machine_type" {
 variable "gke_node_count" {
   description = "The number of nodes in the GKE node pool"
   type        = number
-  default     = 3
+  default     = 2
 }

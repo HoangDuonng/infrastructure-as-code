@@ -1,9 +1,21 @@
+module "vpc" {
+  source     = "./modules/gcp/vpc"
+  project_id = var.project_id
+  region     = var.region
+}
+
 module "gke" {
-  source       = "./modules/gcp/gke"
-  project_id   = var.project_id
-  region       = var.region
-  zone         = var.zone
-  cluster_name = var.cluster_name
+  source             = "./modules/gcp/gke"
+  project_id         = var.project_id
+  region             = var.region
+  zone               = var.zone
+  cluster_name       = var.cluster_name
+  network            = module.vpc.network_self_link
+  subnetwork         = module.vpc.subnet_self_link
+  pods_cidr_name     = module.vpc.pods_cidr_name
+  services_cidr_name = module.vpc.services_cidr_name
+  machine_type       = var.gke_machine_type
+  node_count         = var.gke_node_count
 }
 
 module "iam" {

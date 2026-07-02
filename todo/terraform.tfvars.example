@@ -1,0 +1,51 @@
+# ==========================================
+# Terraform Variables Example Template
+# ==========================================
+# Copy this file to "terraform.tfvars" and customize the values.
+# Only uncomment/change values you want to override from the defaults.
+
+# ------------------------------------------
+# Required Variables (No Default)
+# ------------------------------------------
+
+# The GCP Project ID where resources will be managed
+project_id = "your-gcp-project-id-here"
+
+
+# ------------------------------------------
+# GCP Configuration (Optional - Defaults Provided)
+# ------------------------------------------
+
+# The default GCP Region for regional resources
+# region = "asia-southeast1"
+
+# The GKE cluster zonal location
+# zone = "asia-southeast1-a"
+
+
+# ------------------------------------------
+# GKE Cluster Configuration (Optional)
+# ------------------------------------------
+
+# The name of the GKE cluster
+# cluster_name = "todo-cluster"
+
+# The machine type for GKE nodes (e.g., e2-micro, e2-medium, n1-standard-1)
+# gke_machine_type = "e2-medium"
+
+# The number of nodes in the GKE node pool
+# gke_node_count = 3
+
+
+# ------------------------------------------
+# VPC Network Configuration (Optional)
+# ------------------------------------------
+
+# If you need to customize the subnets or IP ranges, declare these variables
+# and forward them inside your root main.tf to the VPC module.
+
+# vpc_name      = "todo-vpc"
+# subnet_name   = "todo-subnet"
+# subnet_cidr   = "10.0.0.0/20"
+# pods_cidr     = "10.4.0.0/14"
+# services_cidr = "10.8.0.0/20"

@@ -20,3 +20,15 @@ variable "cluster_name" {
   type        = string
   default     = "todo-cluster"
 }
+
+variable "gke_machine_type" {
+  description = "The machine type for the GKE nodes"
+  type        = string
+  default     = "e2-medium"
+}
+
+variable "gke_node_count" {
+  description = "The number of nodes in the GKE node pool"
+  type        = number
+  default     = 3
+}

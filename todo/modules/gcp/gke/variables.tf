@@ -49,3 +49,16 @@ variable "node_count" {
   description = "The number of nodes in the node pool"
   default     = 3
 }
+
+variable "disk_type" {
+  type        = string
+  description = "The disk type for the GKE nodes"
+  default     = "pd-standard"
+}
+
+variable "disk_size_gb" {
+  type        = number
+  description = "The disk size in GB for the GKE nodes"
+  default     = 40
+}
+

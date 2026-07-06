@@ -30,4 +30,5 @@ Thumbs.db
 *.key
 /secrets/
 .env
+docs/
 

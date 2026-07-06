@@ -28,6 +28,10 @@ resource "google_container_cluster" "primary" {
     enabled  = true
     provider = "PROVIDER_UNSPECIFIED"
   }
+
+  gateway_api_config {
+    channel = "CHANNEL_STANDARD"
+  }
 }
 
 resource "google_container_node_pool" "primary_nodes" {

@@ -5,6 +5,9 @@ resource "google_container_cluster" "primary" {
   network    = var.network
   subnetwork = var.subnetwork
 
+  logging_service    = "none"
+  monitoring_service = "none"
+
   # We must delete the default node pool to follow GKE best practices
   remove_default_node_pool = true
   initial_node_count       = 1

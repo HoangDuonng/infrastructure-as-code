@@ -32,6 +32,10 @@
           --set installCRDs=true \
           --wait
 
+    - name: Wait for Cert-Manager webhook to become ready
+      shell: kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=60s
+      changed_when: false
+
     - name: Create cattle-system namespace for Rancher
       shell: kubectl create namespace cattle-system
       failed_when: false
@@ -43,6 +47,7 @@
           --set hostname={{ rancher_hostname }} \
           --set bootstrapPassword={{ rancher_bootstrap_password }} \
           --set replicas=1 \
+          --set ignoreKubeVersion=true \
           --version {{ rancher_version }} \
           --wait
 

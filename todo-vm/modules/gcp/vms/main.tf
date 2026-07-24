@@ -65,24 +65,14 @@ resource "google_compute_instance" "workers" {
   }
 }
 
-# Firewall rule: Allow internal communication in VPC (needed for K8s pod network overlay)
+# Firewall rule: Allow internal communication in VPC (needed for K8s pod network overlay & Calico IPIP)
 resource "google_compute_firewall" "allow_internal" {
   name    = "todo-allow-internal-${var.environment}"
   network = var.network
   project = var.project_id
 
   allow {
-    protocol = "icmp"
-  }
-
-  allow {
-    protocol = "tcp"
-    ports    = ["0-65535"]
-  }
-
-  allow {
-    protocol = "udp"
-    ports    = ["0-65535"]
+    protocol = "all"
   }
 
   source_ranges = ["10.0.0.0/16", "192.168.0.0/16", "10.244.0.0/16"]

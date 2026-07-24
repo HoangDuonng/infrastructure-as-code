@@ -1,59 +1,54 @@
 ---
-- name: Install Ingress Controller, Cert-Manager, and Rancher UI
+- name: Deploy Cert-Manager, Rancher UI, and Nginx Ingress Controller
   hosts: masters
   remote_user: ubuntu
   become: false
   tasks:
-    - name: Check if Helm is installed
-      shell: helm version
-      register: helm_check
-      failed_when: false
-      changed_when: false
-
-    - name: Download and install Helm if not present
+    - name: Ensure Helm is installed
       become: true
       shell: |
-        curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-      when: helm_check.rc != 0
+        if ! command -v helm &> /dev/null; then
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        fi
 
-    - name: Add Helm Repositories
+    - name: Add official Helm repositories
       shell: |
         helm repo add jetstack https://charts.jetstack.io
         helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
         helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
         helm repo update
 
-    - name: Install Cert-Manager
+    - name: 1. Deploy Cert-Manager
       shell: |
         helm upgrade --install cert-manager jetstack/cert-manager \
           --namespace cert-manager \
           --create-namespace \
           --version {{ cert_manager_version }} \
           --set installCRDs=true \
+          --set startupapicheck.enabled=false \
           --set webhook.hostNetwork=true \
-          --set webhook.securePort=10260 \
-          --wait
+          --set webhook.securePort=10260
 
-    - name: Wait for Cert-Manager webhook to become ready
-      shell: kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=60s
-      changed_when: false
+    - name: Wait for Cert-Manager components to be fully ready
+      shell: |
+        kubectl rollout status deployment/cert-manager -n cert-manager --timeout=120s
+        kubectl rollout status deployment/cert-manager-cainjector -n cert-manager --timeout=120s
+        kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=120s
 
-    - name: Create cattle-system namespace for Rancher
-      shell: kubectl create namespace cattle-system
-      failed_when: false
-
-    - name: Install Rancher UI
+    - name: 2. Deploy Rancher UI
       shell: |
         helm upgrade --install rancher rancher-stable/rancher \
           --namespace cattle-system \
+          --create-namespace \
           --set hostname={{ rancher_hostname }} \
           --set bootstrapPassword={{ rancher_bootstrap_password }} \
           --set replicas=1 \
-          --set ignoreKubeVersion=true \
+          --set ingress.ingressClassName=nginx \
+          --set ingress.tls.source=rancher \
           --version {{ rancher_version }} \
           --wait
 
-    - name: Install Nginx Ingress Controller (hostNetwork DaemonSet mode)
+    - name: 3. Deploy Nginx Ingress Controller (DaemonSet HostNetwork)
       shell: |
         helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
           --namespace ingress-nginx \
@@ -63,4 +58,5 @@
           --set controller.dnsPolicy=ClusterFirstWithHostNet \
           --set controller.service.type=ClusterIP \
           --set controller.admissionWebhooks.enabled=false \
+          --set controller.tolerations[0].operator=Exists \
           --wait

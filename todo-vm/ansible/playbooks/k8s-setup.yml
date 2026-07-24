@@ -82,23 +82,23 @@
 
     - name: Download Kubernetes apt keyring
       get_url:
-        url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
+        url: https://pkgs.k8s.io/core:/stable:/v1.36/deb/Release.key
         dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
         mode: '0644'
         force: yes
 
     - name: Add Kubernetes apt repository
       apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /"
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.36/deb/ /"
         state: present
         filename: kubernetes
 
     - name: Install Kubernetes tools (kubelet, kubeadm, kubectl)
       apt:
         name:
-          - "kubelet={{ k8s_version }}-*"
-          - "kubeadm={{ k8s_version }}-*"
-          - "kubectl={{ k8s_version }}-*"
+          - kubelet
+          - kubeadm
+          - kubectl
         state: present
         update_cache: yes
 
@@ -151,9 +151,12 @@
         group: ubuntu
         remote_src: yes
 
-    - name: Install Calico CNI
+    - name: Install Calico CNI via Tigera Operator
       become: false
-      command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
+      shell: |
+        kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.32.1/manifests/tigera-operator.yaml
+        kubectl rollout status deployment/tigera-operator -n tigera-operator --timeout=120s
+        kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.32.1/manifests/custom-resources.yaml
       when: not k8s_init.stat.exists
 
     - name: Generate join command for workers

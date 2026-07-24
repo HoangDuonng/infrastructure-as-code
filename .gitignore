@@ -31,4 +31,7 @@ Thumbs.db
 /secrets/
 .env
 docs/
+vault.yml
+sa-key.json
+*.json
 

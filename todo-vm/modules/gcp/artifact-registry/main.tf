@@ -20,3 +20,11 @@ resource "google_artifact_registry_repository" "todo_repo" {
     }
   }
 }
+
+resource "google_artifact_registry_repository_iam_member" "reader" {
+  project    = var.project_id
+  location   = var.region
+  repository = google_artifact_registry_repository.todo_repo.name
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${var.external_secrets_sa_email}"
+}

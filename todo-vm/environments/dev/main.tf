@@ -28,10 +28,11 @@ module "vms" {
 }
 
 module "artifact_registry" {
-  source     = "../../modules/gcp/artifact-registry"
-  project_id = var.project_id
-  region     = var.region
-  repo_name  = "todo-repo-${var.environment}"
+  source                    = "../../modules/gcp/artifact-registry"
+  project_id                = var.project_id
+  region                    = var.region
+  repo_name                 = "todo-repo-${var.environment}"
+  external_secrets_sa_email = module.iam.external_secrets_sa_email
 }
 
 module "secrets" {

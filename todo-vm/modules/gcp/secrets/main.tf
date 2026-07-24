@@ -25,3 +25,5 @@ resource "google_secret_manager_secret_iam_member" "jwt_accessor" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${var.external_secrets_sa_email}"
 }
+
+

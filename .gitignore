@@ -34,4 +34,6 @@ docs/
 vault.yml
 sa-key.json
 *.json
+inventory/hosts.ini
+**/hosts.ini
 

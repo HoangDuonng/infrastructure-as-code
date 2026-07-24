@@ -30,6 +30,8 @@
           --create-namespace \
           --version {{ cert_manager_version }} \
           --set installCRDs=true \
+          --set webhook.hostNetwork=true \
+          --set webhook.securePort=10260 \
           --wait
 
     - name: Wait for Cert-Manager webhook to become ready

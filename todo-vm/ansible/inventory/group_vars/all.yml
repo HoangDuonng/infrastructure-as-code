@@ -1,9 +1,9 @@
 # Kubernetes Configuration
-k8s_version: "1.36"
+k8s_version: "1.35"
 pod_network_cidr: "192.168.0.0/16"
 
 # Rancher Configuration
-rancher_hostname: "rancher.35.247.183.44.sslip.io"
+rancher_hostname: "rancher.34.87.68.87.sslip.io"
 rancher_version: "v2.14.3"
 rancher_bootstrap_password: "RancherAdminPassword123!"
 cert_manager_version: "v1.21.0"

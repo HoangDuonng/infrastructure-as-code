@@ -38,9 +38,9 @@
         sysctl_file: /etc/sysctl.d/k8s.conf
         reload: yes
       loop:
-        - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
-        - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
-        - { name: 'net.ipv4.ip_forward', value: '1' }
+        - { name: "net.bridge.bridge-nf-call-iptables", value: "1" }
+        - { name: "net.bridge.bridge-nf-call-ip6tables", value: "1" }
+        - { name: "net.ipv4.ip_forward", value: "1" }
 
     - name: Install prerequisite packages
       apt:
@@ -61,7 +61,7 @@
       file:
         path: /etc/containerd
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Generate default containerd config
       shell: containerd config default > /etc/containerd/config.toml
@@ -70,26 +70,26 @@
     - name: Configure containerd to use SystemdCgroup
       replace:
         path: /etc/containerd/config.toml
-        regexp: 'SystemdCgroup = false'
-        replace: 'SystemdCgroup = true'
+        regexp: "SystemdCgroup = false"
+        replace: "SystemdCgroup = true"
       notify: Restart containerd
 
     - name: Create apt keyrings directory
       file:
         path: /etc/apt/keyrings
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Download Kubernetes apt keyring
       get_url:
-        url: https://pkgs.k8s.io/core:/stable:/v1.36/deb/Release.key
+        url: https://pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key
         dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
-        mode: '0644'
+        mode: "0644"
         force: yes
 
     - name: Add Kubernetes apt repository
       apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.36/deb/ /"
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.35/deb/ /"
         state: present
         filename: kubernetes
 
@@ -141,7 +141,7 @@
         state: directory
         owner: ubuntu
         group: ubuntu
-        mode: '0755'
+        mode: "0755"
 
     - name: Copy admin.conf to ubuntu user's kube config
       copy:
@@ -151,13 +151,21 @@
         group: ubuntu
         remote_src: yes
 
+    - name: Check if Calico CNI is installed
+      become: false
+      shell: kubectl get installations.operator.tigera.io default
+      register: calico_check
+      failed_when: false
+      changed_when: false
+
     - name: Install Calico CNI via Tigera Operator
       become: false
       shell: |
         kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.32.1/manifests/tigera-operator.yaml
         kubectl rollout status deployment/tigera-operator -n tigera-operator --timeout=120s
+        kubectl wait --for=condition=Established crd/installations.operator.tigera.io --timeout=60s
         kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.32.1/manifests/custom-resources.yaml
-      when: not k8s_init.stat.exists
+      when: calico_check.rc != 0
 
     - name: Generate join command for workers
       command: kubeadm token create --print-join-command

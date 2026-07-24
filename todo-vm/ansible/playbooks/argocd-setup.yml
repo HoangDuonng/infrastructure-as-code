@@ -27,7 +27,7 @@
         spec:
           ingressClassName: nginx
           rules:
-          - host: argocd.35.247.183.44.sslip.io
+          - host: argocd.34.87.68.87.sslip.io
             http:
               paths:
               - path: /

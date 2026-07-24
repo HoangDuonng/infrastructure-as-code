@@ -26,6 +26,12 @@ resource "google_compute_instance" "master" {
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 
+  labels = {
+    project     = "todo-devops"
+    environment = var.environment
+    managed_by  = "terraform"
+  }
+
   metadata = {
     ssh-keys = "ubuntu:${var.ssh_public_key}"
   }
@@ -39,6 +45,12 @@ resource "google_compute_instance" "workers" {
   project      = var.project_id
 
   tags = ["k8s-node", "k8s-worker"]
+
+  labels = {
+    project     = "todo-devops"
+    environment = var.environment
+    managed_by  = "terraform"
+  }
 
   boot_disk {
     initialize_params {

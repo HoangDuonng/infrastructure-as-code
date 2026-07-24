@@ -1,0 +1,40 @@
+---
+- name: Deploy ArgoCD GitOps Engine
+  hosts: masters
+  remote_user: ubuntu
+  become: false
+  tasks:
+    - name: 1. Create ArgoCD namespace and install ArgoCD
+      shell: |
+        kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+        kubectl apply --server-side --force-conflicts -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+    - name: 2. Wait for ArgoCD server deployment to be ready
+      shell: |
+        kubectl rollout status deployment/argocd-server -n argocd --timeout=180s
+
+    - name: 3. Create Ingress for ArgoCD Server UI
+      shell: |
+        kubectl apply -n argocd -f - <<'EOF'
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: argocd-server-ingress
+          namespace: argocd
+          annotations:
+            nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+            nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+        spec:
+          ingressClassName: nginx
+          rules:
+          - host: argocd.35.247.183.44.sslip.io
+            http:
+              paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: argocd-server
+                    port:
+                      name: https
+        EOF

@@ -41,6 +41,8 @@
         - { name: "net.bridge.bridge-nf-call-iptables", value: "1" }
         - { name: "net.bridge.bridge-nf-call-ip6tables", value: "1" }
         - { name: "net.ipv4.ip_forward", value: "1" }
+        - { name: "net.ipv4.conf.all.rp_filter", value: "0" }
+        - { name: "net.ipv4.conf.default.rp_filter", value: "0" }
 
     - name: Install prerequisite packages
       apt:
@@ -162,10 +164,11 @@
       become: false
       shell: |
         kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.32.1/manifests/tigera-operator.yaml
+        sleep 10
         kubectl rollout status deployment/tigera-operator -n tigera-operator --timeout=120s
-        kubectl wait --for=condition=Established crd/installations.operator.tigera.io --timeout=60s
         kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.32.1/manifests/custom-resources.yaml
-        kubectl patch installation default --type=merge -p '{"spec":{"calicoNetwork":{"ipPools":[{"blockSize":26,"cidr":"192.168.0.0/16","encapsulation":"VXLAN","name":"default-ipv4-ippool","natOutgoing":"Enabled","nodeSelector":"all()"}]}}}'
+        sleep 5
+        kubectl patch installation default --type=merge -p '{"spec":{"calicoNetwork":{"nodeAddressAutodetectionV4":{"cidrs":["10.0.0.0/16"]},"ipPools":[{"blockSize":26,"cidr":"192.168.0.0/16","encapsulation":"IPinIP","name":"default-ipv4-ippool","natOutgoing":"Enabled","nodeSelector":"all()"}]}}}'
       when: calico_check.rc != 0
 
     - name: Check if Local Path StorageClass is installed

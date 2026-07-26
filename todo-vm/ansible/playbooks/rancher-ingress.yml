@@ -3,6 +3,8 @@
   hosts: masters
   remote_user: ubuntu
   become: false
+  vars_files:
+    - "../inventory/group_vars/vault.yml"
   tasks:
     - name: Ensure Helm is installed
       become: true
@@ -41,21 +43,22 @@
           --namespace cattle-system \
           --create-namespace \
           --set hostname={{ rancher_hostname }} \
-          --set bootstrapPassword={{ rancher_bootstrap_password }} \
+          --set bootstrapPassword={{ rancher_bootstrap_password}} \
           --set replicas=1 \
           --set ingress.ingressClassName=nginx \
           --set ingress.tls.source=rancher \
           --version {{ rancher_version }} \
           --wait
 
-    - name: 3. Deploy Nginx Ingress Controller (DaemonSet HostNetwork)
+    - name: 3. Deploy Nginx Ingress Controller (DaemonSet HostPort)
       shell: |
         helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
           --namespace ingress-nginx \
           --create-namespace \
-          --set controller.hostNetwork=true \
+          --set controller.hostPort.enabled=true \
+          --set controller.hostPort.ports.http=80 \
+          --set controller.hostPort.ports.https=443 \
           --set controller.kind=DaemonSet \
-          --set controller.dnsPolicy=ClusterFirstWithHostNet \
           --set controller.service.type=ClusterIP \
           --set controller.admissionWebhooks.enabled=false \
           --set controller.tolerations[0].operator=Exists \

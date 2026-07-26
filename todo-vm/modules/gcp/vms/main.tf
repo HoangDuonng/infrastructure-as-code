@@ -41,10 +41,16 @@ resource "google_compute_instance" "workers" {
   count        = var.worker_count
   name         = "todo-worker-${count.index + 1}-${var.environment}"
   machine_type = var.worker_machine_type
-  zone         = var.zone
+  zone         = element(["${var.region}-a", "${var.region}-b", "${var.region}-c"], count.index)
   project      = var.project_id
 
   tags = ["k8s-node", "k8s-worker"]
+
+  scheduling {
+    preemptible        = true
+    automatic_restart  = false
+    provisioning_model = "SPOT"
+  }
 
   labels = {
     project     = "todo-devops"

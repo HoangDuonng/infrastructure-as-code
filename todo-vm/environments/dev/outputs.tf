@@ -17,3 +17,14 @@ output "worker_private_ips" {
   description = "The private IPs of the Kubernetes worker nodes"
   value       = module.vms.worker_private_ips
 }
+
+output "infra_public_ip" {
+  description = "The public IP of the Kubernetes infra node"
+  value       = module.vms.infra_public_ip
+}
+
+output "infra_private_ip" {
+  description = "The private IP of the Kubernetes infra node"
+  value       = module.vms.infra_private_ip
+}
+

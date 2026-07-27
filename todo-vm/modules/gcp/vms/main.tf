@@ -37,6 +37,51 @@ resource "google_compute_instance" "master" {
   }
 }
 
+resource "google_compute_instance" "infra" {
+  name         = "todo-infra-${var.environment}"
+  machine_type = var.master_machine_type
+  zone         = var.zone
+  project      = var.project_id
+
+  tags = ["k8s-node", "k8s-infra"]
+
+  scheduling {
+    preemptible       = false
+    automatic_restart = true
+  }
+
+  boot_disk {
+    initialize_params {
+      image = var.os_image
+      size  = 30
+      type  = "pd-standard"
+    }
+  }
+
+  network_interface {
+    subnetwork = var.subnetwork
+    access_config {
+      // Dynamic public IP
+    }
+  }
+
+  service_account {
+    email  = var.external_secrets_sa_email
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+
+  labels = {
+    project     = "todo-devops"
+    environment = var.environment
+    role        = "infra"
+    managed_by  = "terraform"
+  }
+
+  metadata = {
+    ssh-keys = "ubuntu:${var.ssh_public_key}"
+  }
+}
+
 resource "google_compute_instance" "workers" {
   count        = var.worker_count
   name         = "todo-worker-${count.index + 1}-${var.environment}"

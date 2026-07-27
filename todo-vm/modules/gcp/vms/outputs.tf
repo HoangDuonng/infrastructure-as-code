@@ -17,3 +17,14 @@ output "worker_private_ips" {
   description = "The private IPs of the Kubernetes worker nodes"
   value       = google_compute_instance.workers[*].network_interface[0].network_ip
 }
+
+output "infra_public_ip" {
+  description = "The public IP of the Kubernetes infra node"
+  value       = google_compute_instance.infra.network_interface[0].access_config[0].nat_ip
+}
+
+output "infra_private_ip" {
+  description = "The private IP of the Kubernetes infra node"
+  value       = google_compute_instance.infra.network_interface[0].network_ip
+}
+

@@ -1,0 +1,12 @@
+---
+- name: Label Infrastructure Node for Monitoring & ArgoCD Isolation
+  hosts: masters
+  remote_user: ubuntu
+  become: false
+  tasks:
+    - name: 1. Label infra node with workload=infrastructure
+      shell: |
+        NODENAME=$(kubectl get nodes -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | grep 'infra' | head -n 1)
+        if [ -n "$NODENAME" ]; then
+          kubectl label node "$NODENAME" workload=infrastructure --overwrite
+        fi

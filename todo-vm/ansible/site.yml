@@ -1,6 +1,7 @@
 ---
 # Main entrypoint playbook for Todo VM infrastructure
 - import_playbook: playbooks/k8s-setup.yml
+- import_playbook: playbooks/infra-node-setup.yml
 - import_playbook: playbooks/external-secrets-setup.yml
 - import_playbook: playbooks/argocd-setup.yml
 - import_playbook: playbooks/rancher-ingress.yml

@@ -12,6 +12,9 @@
     - name: 2. Configure ArgoCD server insecure mode (for Nginx Ingress proxying)
       shell: |
         kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.insecure":"true"}}'
+        kubectl patch deployment argocd-server -n argocd -p '{"spec":{"template":{"spec":{"nodeSelector":{"workload":"infrastructure"}}}}}' || true
+        kubectl patch deployment argocd-repo-server -n argocd -p '{"spec":{"template":{"spec":{"nodeSelector":{"workload":"infrastructure"}}}}}' || true
+        kubectl patch statefulset argocd-application-controller -n argocd -p '{"spec":{"template":{"spec":{"nodeSelector":{"workload":"infrastructure"}}}}}' || true
         kubectl rollout restart deployment argocd-server -n argocd
         kubectl rollout status deployment/argocd-server -n argocd --timeout=180s
 

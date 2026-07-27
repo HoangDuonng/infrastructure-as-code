@@ -168,7 +168,7 @@
         kubectl rollout status deployment/tigera-operator -n tigera-operator --timeout=120s
         kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.32.1/manifests/custom-resources.yaml
         sleep 5
-        kubectl patch installation default --type=merge -p '{"spec":{"calicoNetwork":{"nodeAddressAutodetectionV4":{"cidrs":["10.0.0.0/16"]},"ipPools":[{"blockSize":26,"cidr":"192.168.0.0/16","encapsulation":"IPinIP","name":"default-ipv4-ippool","natOutgoing":"Enabled","nodeSelector":"all()"}]}}}'
+        kubectl patch installation default --type=merge -p '{"spec":{"calicoNetwork":{"nodeAddressAutodetectionV4":{"cidrs":["10.0.0.0/16"]},"ipPools":[{"blockSize":26,"cidr":"192.168.0.0/16","encapsulation":"VXLAN","name":"default-ipv4-ippool","natOutgoing":"Enabled","nodeSelector":"all()"}]}}}'
       when: calico_check.rc != 0
 
     - name: Check if Local Path StorageClass is installed
@@ -195,7 +195,7 @@
         join_command: "{{ join_command_raw.stdout }}"
 
 - name: Join Worker Nodes to Cluster
-  hosts: workers
+  hosts: workers:infra_nodes
   become: true
   tasks:
     - name: Check if node is already part of the cluster

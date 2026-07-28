@@ -104,19 +104,21 @@
         state: present
         update_cache: yes
 
-    - name: Pin Kubernetes packages versions
-      dpkg_selections:
-        name: "{{ item }}"
-        selection: hold
-      loop:
-        - kubelet
-        - kubeadm
-        - kubectl
+    - name: Configure kubelet to force internal VPC private IP
+      copy:
+        content: "KUBELET_EXTRA_ARGS=--node-ip={{ private_ip }}"
+        dest: /etc/default/kubelet
+      notify: Restart kubelet
 
   handlers:
     - name: Restart containerd
       service:
         name: containerd
+        state: restarted
+
+    - name: Restart kubelet
+      service:
+        name: kubelet
         state: restarted
 
 - name: Bootstrap Kubernetes Master Node

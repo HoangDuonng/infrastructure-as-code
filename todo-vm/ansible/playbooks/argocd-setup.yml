@@ -42,3 +42,26 @@
                     port:
                       name: http
         EOF
+
+    - name: 4. Create Ingress for Grafana Server UI
+      shell: |
+        kubectl apply -n monitoring -f - <<'EOF'
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: grafana-server-ingress
+          namespace: monitoring
+        spec:
+          ingressClassName: nginx
+          rules:
+          - host: grafana.{{ ansible_host }}.sslip.io
+            http:
+              paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: prometheus-monitoring-grafana
+                    port:
+                      number: 80
+        EOF

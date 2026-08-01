@@ -21,6 +21,7 @@ module "vms" {
   network                   = module.vpc.network_self_link
   subnetwork                = module.vpc.subnet_self_link
   master_machine_type       = var.master_machine_type
+  infra_machine_type        = var.infra_machine_type
   worker_machine_type       = var.worker_machine_type
   worker_count              = var.worker_count
   ssh_public_key            = var.ssh_public_key

@@ -39,9 +39,10 @@ resource "google_compute_instance" "master" {
 
 resource "google_compute_instance" "infra" {
   name         = "todo-infra-${var.environment}"
-  machine_type = var.master_machine_type
+  machine_type = var.infra_machine_type
   zone         = var.zone
   project      = var.project_id
+  allow_stopping_for_update = true
 
   tags = ["k8s-node", "k8s-infra"]
 

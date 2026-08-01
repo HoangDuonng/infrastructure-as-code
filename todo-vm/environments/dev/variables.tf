@@ -39,6 +39,12 @@ variable "worker_count" {
   default     = 3
 }
 
+variable "infra_machine_type" {
+  description = "The machine type for the Kubernetes infrastructure node"
+  type        = string
+  default     = "e2-medium"
+}
+
 variable "ssh_public_key" {
   description = "The literal SSH public key content to install on the instances"
   type        = string

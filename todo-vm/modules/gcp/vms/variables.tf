@@ -46,6 +46,12 @@ variable "worker_count" {
   default     = 3
 }
 
+variable "infra_machine_type" {
+  description = "The machine type for the Infrastructure node"
+  type        = string
+  default     = "e2-medium"
+}
+
 variable "os_image" {
   description = "The OS image for the VM instances"
   type        = string

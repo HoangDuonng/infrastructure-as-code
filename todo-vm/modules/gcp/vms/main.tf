@@ -89,6 +89,7 @@ resource "google_compute_instance" "workers" {
   machine_type = var.worker_machine_type
   zone         = element(["${var.region}-a", "${var.region}-b", "${var.region}-c"], count.index)
   project      = var.project_id
+  allow_stopping_for_update = true
 
   tags = ["k8s-node", "k8s-worker"]
 

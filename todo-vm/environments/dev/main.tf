@@ -34,6 +34,7 @@ module "artifact_registry" {
   region                    = var.region
   repo_name                 = "todo-repo-${var.environment}"
   external_secrets_sa_email = module.iam.external_secrets_sa_email
+  ci_sa_email               = module.iam.ci_sa_email
 }
 
 module "secrets" {

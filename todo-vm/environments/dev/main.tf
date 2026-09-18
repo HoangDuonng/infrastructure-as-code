@@ -42,3 +42,17 @@ module "secrets" {
   external_secrets_sa_email = module.iam.external_secrets_sa_email
   environment               = var.environment
 }
+
+# Cloud SQL variant: runs alongside the in-cluster MySQL code (which is left
+# untouched). Switch the app to it via the GitOps values-cloudsql variant.
+module "sql" {
+  source            = "../../modules/gcp/sql"
+  project_id        = var.project_id
+  region            = var.region
+  environment       = var.environment
+  network_self_link = module.vpc.network_self_link
+  mysql_secret_id   = "projects/${var.project_id}/secrets/mysql-root-password-${var.environment}"
+  db_tier           = var.db_tier
+
+  depends_on = [module.secrets]
+}

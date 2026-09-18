@@ -28,3 +28,13 @@ output "infra_private_ip" {
   value       = module.vms.infra_private_ip
 }
 
+output "sql_private_ip" {
+  description = "The private IP of the Cloud SQL instance (DB host for the app)"
+  value       = module.sql.private_ip
+}
+
+output "sql_connection_name" {
+  description = "The Cloud SQL connection name"
+  value       = module.sql.connection_name
+}
+

@@ -50,3 +50,9 @@ variable "ssh_public_key" {
   type        = string
   default     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC8... placeholder"
 }
+
+variable "db_tier" {
+  description = "The Cloud SQL machine tier"
+  type        = string
+  default     = "db-f1-micro"
+}

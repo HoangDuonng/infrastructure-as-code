@@ -39,7 +39,7 @@ resource "google_sql_database_instance" "mysql" {
   name                = "todo-mysql-${var.environment}"
   project             = var.project_id
   region              = var.region
-  database_version    = "MYSQL_8_0"
+  database_version    = var.db_version
   deletion_protection = false
 
   depends_on = [google_service_networking_connection.private_vpc]

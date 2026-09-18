@@ -30,6 +30,12 @@ variable "db_tier" {
   default     = "db-f1-micro"
 }
 
+variable "db_version" {
+  type        = string
+  description = "The Cloud SQL database version (8.4 LTS avoids EOL warnings)"
+  default     = "MYSQL_8_4"
+}
+
 variable "db_disk_size_gb" {
   type        = number
   description = "Initial disk size in GB (autoresize is enabled)"

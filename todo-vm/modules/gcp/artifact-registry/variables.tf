@@ -24,3 +24,8 @@ variable "ci_sa_email" {
   type        = string
   description = "The email of the CI Service Account allowed to push images"
 }
+
+variable "puller_sa_email" {
+  type        = string
+  description = "The email of the Service Account allowed to pull images"
+}

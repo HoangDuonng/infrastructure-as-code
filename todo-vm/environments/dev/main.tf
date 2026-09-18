@@ -35,6 +35,7 @@ module "artifact_registry" {
   repo_name                 = "todo-repo-${var.environment}"
   external_secrets_sa_email = module.iam.external_secrets_sa_email
   ci_sa_email               = module.iam.ci_sa_email
+  puller_sa_email           = module.iam.puller_sa_email
 }
 
 module "secrets" {

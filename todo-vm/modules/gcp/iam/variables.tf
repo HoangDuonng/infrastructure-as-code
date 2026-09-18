@@ -27,6 +27,12 @@ variable "ci_gsa_name" {
   default     = "github-ci"
 }
 
+variable "puller_gsa_name" {
+  type        = string
+  description = "The name of the Google Service Account used by kubelets to pull GAR images"
+  default     = "gar-puller"
+}
+
 variable "github_pool_id" {
   type        = string
   description = "Full resource name of the existing GitHub workload identity pool"

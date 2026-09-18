@@ -11,6 +11,18 @@ resource "google_service_account" "ci" {
   project      = var.project_id
 }
 
+# Least-privilege puller used only by kubelets (via imagePullSecret) to read GAR
+resource "google_service_account" "gar_puller" {
+  account_id   = var.puller_gsa_name
+  display_name = "GAR image puller for self-managed nodes"
+  project      = var.project_id
+}
+
+# Key material is consumed once into a k8s imagePullSecret; rotate by tainting
+resource "google_service_account_key" "gar_puller" {
+  service_account_id = google_service_account.gar_puller.name
+}
+
 resource "google_service_account_iam_member" "ci_workload_identity" {
   service_account_id = google_service_account.ci.name
   role               = "roles/iam.workloadIdentityUser"

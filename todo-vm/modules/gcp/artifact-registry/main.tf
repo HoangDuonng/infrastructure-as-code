@@ -36,3 +36,11 @@ resource "google_artifact_registry_repository_iam_member" "ci_writer" {
   role       = "roles/artifactregistry.writer"
   member     = "serviceAccount:${var.ci_sa_email}"
 }
+
+resource "google_artifact_registry_repository_iam_member" "puller_reader" {
+  project    = var.project_id
+  location   = var.region
+  repository = google_artifact_registry_repository.todo_repo.name
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${var.puller_sa_email}"
+}

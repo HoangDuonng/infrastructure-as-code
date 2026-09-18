@@ -94,9 +94,10 @@ resource "google_compute_instance" "workers" {
   tags = ["k8s-node", "k8s-worker"]
 
   scheduling {
-    preemptible        = true
-    automatic_restart  = false
-    provisioning_model = "SPOT"
+    preemptible         = false
+    automatic_restart   = true
+    provisioning_model  = "STANDARD"
+    on_host_maintenance = "MIGRATE"
   }
 
   labels = {
